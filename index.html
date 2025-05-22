@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exposure Preview</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #f3f4f6;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #1f2937;
+    }
+    #parent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      background: #f9fafb;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 32px 0 rgba(31,41,55,0.10), 0 2px 4px 0 rgba(31,41,55,0.06);
+      max-width: 400px;
+      margin: auto;
+      padding: 2.5rem 2rem 2rem 2rem;
+      gap: 1.5rem;
+    }
+    #parent h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #111827;
+      margin-bottom: 1rem;
+    }
+    #apiToken {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      background: #fff;
+      color: #1f2937;
+      transition: border 0.2s;
+      margin-bottom: 0.5rem;
+      box-sizing: border-box;
+    }
+    #apiToken:focus {
+      outline: none;
+      border-color: #1a223f;
+      box-shadow: 0 0 0 2px #2563eb22;
+    }
+    button {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background-color: #1a223f;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px 0 rgba(37,99,235,0.10);
+      transition: background 0.2s, transform 0.1s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    button:hover {
+      background-color: #0a0d11;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 4px 16px 0 rgba(37,99,235,0.15);
+    }
+    @media (max-width: 500px) {
+      #parent {
+        max-width: 95vw;
+        padding: 1.5rem 0.5rem 1rem 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="parent">
+    <h2>Exposure - Preview</h2>
+    <input type="text" id="apiToken" placeholder="Enter an API token">
+    <br>
+    <button onclick="loadIframe()">Load</button>
+  </div>
+  <iframe id="myIframe" src="" frameborder="0" style="width: 100%; height: 100%; display: none;"></iframe>
+
+  <script>
+    function validateToken(token) {
+      const tokenPattern = /^[a-zA-Z0-9]{40}$/;
+      return tokenPattern.test(token);
+    }
+
+    function loadIframe() {
+      const apiToken = document.getElementById('apiToken').value;
+      if (!apiToken || !validateToken(apiToken)) {
+        alert('Please enter a valid API token');
+        return;
+      }
+      const parent = document.getElementById('parent');
+      const iframe = document.getElementById('myIframe');
+
+      window.addEventListener('message', function messageHandler(event) {
+        if (event.data === 'protodisco-ready') {
+          const message = {
+            eventType: 'protodisco-init',
+            apiToken: apiToken
+          };
+          iframe.contentWindow.postMessage(message, '*');
+          window.removeEventListener('message', messageHandler);
+        }
+      });
+
+      parent.style.display = "none";
+      iframe.src = "https://p01--protodisco-ui--xvqlb9g7w8db.code.run";
+      iframe.style.display = "block";
+    }
+  </script>
+</body>
+</html>
