@@ -34,7 +34,7 @@
       color: #111827;
       margin-bottom: 1rem;
     }
-    #apiToken {
+    #apiToken, #password {
       width: 100%;
       padding: 0.75rem 1rem;
       border: 1px solid #d1d5db;
@@ -46,7 +46,7 @@
       margin-bottom: 0.5rem;
       box-sizing: border-box;
     }
-    #apiToken:focus {
+    #apiToken:focus, #password:focus {
       outline: none;
       border-color: #1a223f;
       box-shadow: 0 0 0 2px #2563eb22;
@@ -82,6 +82,7 @@
 <body>
   <div id="parent">
     <h2>Exposure - Preview</h2>
+    <input type="password" id="password" placeholder="Enter password" />
     <input type="text" id="apiToken" placeholder="Enter an API token">
     <br>
     <button onclick="loadIframe()">Load</button>
@@ -89,15 +90,34 @@
   <iframe id="myIframe" src="" frameborder="0" style="width: 100%; height: 100%; display: none;"></iframe>
 
   <script>
+    function encryptDecryptPassword(inputString) {
+      inputString = inputString.split("");
+      const xorKey = '1926';
+      for (let i = 0; i < inputString.length; i++)
+      {
+        inputString[i] = (String.fromCharCode((inputString[i].charCodeAt(0)) ^ xorKey.charCodeAt(0)));
+      }
+      return inputString.join("");
+    }
+
     function validateToken(token) {
       const tokenPattern = /^[a-zA-Z0-9]{40}$/;
       return tokenPattern.test(token);
     }
 
+    function validatePassword(password) {
+      const encrypted = "tIA^BDCT\x1F\x03\x04";
+      const decrypted = encryptDecryptPassword(password);
+      return decrypted === encrypted;
+    }
+
     function loadIframe() {
       const apiToken = document.getElementById('apiToken').value;
-      if (!apiToken || !validateToken(apiToken)) {
-        alert('Please enter a valid API token');
+      const password = document.getElementById('password').value;
+      if (!apiToken || !validateToken(apiToken) || !validatePassword(password)) {
+        alert('Please enter a valid API token and password');
+        document.getElementById('apiToken').value = '';
+        document.getElementById('password').value = '';
         return;
       }
       const parent = document.getElementById('parent');
@@ -115,7 +135,7 @@
       });
 
       parent.style.display = "none";
-      iframe.src = "https://p01--protodisco-ui--xvqlb9g7w8db.code.run";
+      iframe.src = "https://protodisco-ui.onrender.com";
       iframe.style.display = "block";
     }
   </script>
