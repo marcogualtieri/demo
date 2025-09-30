@@ -83,6 +83,8 @@
     <h2>Exposure - Preview</h2>
     <input type="password" id="password" placeholder="Enter password" />
     <input type="text" id="apiToken" placeholder="Enter an API token">
+    <input type="hidden" id="org_id" value="665">
+    <input type="hidden" id="user_id" value="895">
     <br>
     <button onclick="loadIframe()">Load</button>
   </div>
@@ -119,6 +121,8 @@
         document.getElementById('password').value = '';
         return;
       }
+      const orgId = parseInt(document.getElementById('org_id').value);
+      const userId = parseInt(document.getElementById('user_id').value);
       const parent = document.getElementById('parent');
       const iframe = document.getElementById('myIframe');
 
@@ -126,7 +130,11 @@
         if (event.data === 'protodisco-ready') {
           const message = {
             eventType: 'protodisco-init',
-            apiToken: apiToken
+            apiToken: apiToken,
+            data: {
+              org_id: orgId,
+              user_id: userId
+            }
           };
           iframe.contentWindow.postMessage(message, '*');
           window.removeEventListener('message', messageHandler);
